@@ -130,8 +130,16 @@ function update() {
       if(cursors.up.isDown)
         player.body.velocity.y = -350;
 
-      if( !cursors.left.isDown && !cursors.right.isDown )
-        player.body.velocity.x = 0;
+      // Apply friction when player is sliding
+      if( !cursors.left.isDown && !cursors.right.isDown && Math.abs(player.body.velocity.x) > 0 ) {
+        player.body.velocity.x *= player.body.friction;
+
+        console.log(Math.abs(player.body.velocity.x));
+
+        if( Math.abs(player.body.velocity.x) < 0.1 ) {
+          player.body.velocity.x = 0;
+        }
+      }
 
     }
 

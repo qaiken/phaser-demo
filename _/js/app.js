@@ -11,12 +11,11 @@ var score = 0;
 var scoreText;
 
 function preload() {
-
   game.load.image('sky', 'img/sky.png');
+  game.load.image('diamond', 'img/diamond.png');
   game.load.image('ground', 'img/platform.png');
   game.load.image('star', 'img/star.png');
   game.load.spritesheet('dude', 'img/dude.png', 32, 48);
-
 }
 
 function create() {
@@ -71,17 +70,33 @@ function create() {
   //  We will enable physics for any star that is created in this group
   stars.enableBody = true;
 
+  var numStars = 12;
+
   //  Here we'll create 12 of them evenly spaced apart
-  for (var i = 0; i < 12; i++)
-  {
+  for (var i = 0; i < numStars; i++) {
       //  Create a star inside of the 'stars' group
-      var star = stars.create(i * 70, 0, 'star');
+      var star = stars.create(i * (game.width/numStars) + 10, 0, 'star');
 
       //  Let gravity do its thing
       star.body.gravity.y = 300;
 
       //  This just gives each star a slightly random bounce value
       star.body.bounce.y = 0.7 + Math.random() * 0.2;
+  }
+
+  //  Similar to stars, add diamonds as well
+  diamonds = game.add.group();
+
+  diamonds.enableBody = true;
+
+  var numDiamonds = 3;
+
+  for (var i = 0; i < numDiamonds; i++) {
+      var diamond = diamonds.create(i * (game.width/numDiamonds) + 20, 0, 'diamond');
+
+      diamond.body.gravity.y = 600;
+
+      diamond.body.bounce.y = 0.2 + Math.random() * 0.2;
   }
 
   //  The score
@@ -94,12 +109,15 @@ function create() {
 
 function update() {
 
-  //  Collide the player and the stars with the platforms
+  // Collide the entities with the platforms
   game.physics.arcade.collide(player, platforms);
   game.physics.arcade.collide(stars, platforms);
+  game.physics.arcade.collide(diamonds, platforms);
 
-  //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-  game.physics.arcade.overlap(player, stars, collectStar, null, this);
+  // Checks to see if the player overlaps with any of the stars or diamonds
+  // Call collectPoints function if so
+  game.physics.arcade.overlap(player, stars, collectPoints, null, this);
+  game.physics.arcade.overlap(player, diamonds, collectPoints, null, this);
 
   if (cursors.left.isDown)
   {
@@ -134,8 +152,6 @@ function update() {
     if( !cursors.left.isDown && !cursors.right.isDown && Math.abs(player.body.velocity.x) > 0 ) {
       player.body.velocity.x *= player.body.friction;
 
-      console.log(Math.abs(player.body.velocity.x));
-
       if( Math.abs(player.body.velocity.x) < 0.1 ) {
         player.body.velocity.x = 0;
       }
@@ -145,13 +161,14 @@ function update() {
 
 }
 
-function collectStar (player, star) {
-    
-  // Removes the star from the screen
-  star.kill();
+function collectPoints(player, object) {    
+  // Remove the object from the screen
+  object.kill();
 
-  //  Add and update the score
-  score += 10;
+  var points = object.key === 'diamond' ? 10 : 1;
+
+  // Add and update the score
+  score += points;
+
   scoreText.text = 'Score: ' + score;
-
 }

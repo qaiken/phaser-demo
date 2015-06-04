@@ -1,4 +1,4 @@
-# simple-grunt-boilerplate
+# phaser-demo
 
-Just a simplified, gruntified version of:
-https://github.com/40Digits/gulp-starter
+Starting Point:
+https://phaser.io/tutorials/making-your-first-phaser-game

@@ -1,22 +1,19 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var Phaser = (window.Phaser);
 
+var player, baddies, platforms, cursors, stars, diamonds, scoreText;
+
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
   preload: preload,
   create: create,
   update: update
 });
 
-var player;
-var baddies;
-var platforms;
-var cursors;
-
-var stars;
-var diamonds;
+var randomVelocity = function() {
+  return Math.floor((Math.random() * 51) + 50);
+};
 
 var score = 0;
-var scoreText;
 
 function preload() {
   game.load.image('sky', 'img/sky.png');
@@ -32,74 +29,15 @@ function create() {
 
   initScene();
 
-  // The player and its settings
-  player = game.add.sprite(32, game.world.height - 150, 'dude');
+  drawPlayer();
 
-  // The baddie and its settings
-  baddies = game.add.group();
+  drawBaddies();
 
-  baddies.enableBody = true;
+  drawStars();
 
-  for (var i = 0; i < 3; i++) {
-    var baddie = baddies.create((i * 300) + 25, 0, 'baddie');
+  drawDiamonds();
 
-    // Baddie physics properties.
-    baddie.body.bounce.y = 0.2;
-    baddie.body.gravity.y = 300;
-    baddie.body.collideWorldBounds = true;
-
-    // Two badie animations, walking left and right.
-    baddie.animations.add('left', [0, 1], 10, true);
-    baddie.animations.add('right', [2,3], 10, true);
-
-    game.physics.arcade.enable(baddie);
-  }
-
-  // We need to enable physics on the player and baddie
-  game.physics.arcade.enable(player);
-
-  // Player physics properties. Give the little guy a slight bounce.
-  player.body.bounce.y = 0.2;
-  player.body.gravity.y = 300;
-  player.body.friction = 0.95;
-  player.body.collideWorldBounds = true;
-
-  // Two player animations, walking left and right.
-  player.animations.add('left', [0, 1, 2, 3], 10, true);
-  player.animations.add('right', [5, 6, 7, 8], 10, true);
-
-  // Finally some stars to collect
-  stars = game.add.group();
-
-  // We will enable physics for any star that is created in this group
-  stars.enableBody = true;
-
-  // Here we'll create 12 of them evenly spaced apart
-  var numStars = 12;
-  for (var i = 0; i < numStars; i++) {
-    // Create a star inside of the 'stars' group
-    var star = stars.create(i * (game.width / numStars) + 10, 0, 'star');
-
-    // Let gravity do its thing
-    star.body.gravity.y = 300;
-
-    // This just gives each star a slightly random bounce value
-    star.body.bounce.y = 0.7 + Math.random() * 0.2;
-  }
-
-  // Similar to stars, add diamonds as well
-  diamonds = game.add.group();
-
-  diamonds.enableBody = true;
-
-  var numDiamonds = 3;
-  for (var i = 0; i < numDiamonds; i++) {
-    var diamond = diamonds.create(i * (game.width / numDiamonds) + 20, 0, 'diamond');
-
-    diamond.body.gravity.y = 600;
-
-    diamond.body.bounce.y = 0.2 + Math.random() * 0.2;
-  }
+  initBaddies();
 
   // The score
   scoreText = game.add.text(16, 16, 'score: 0', {
@@ -109,8 +47,6 @@ function create() {
 
   // Our controls.
   cursors = game.input.keyboard.createCursorKeys();
-
-  initBaddies();
 }
 
 function update() {
@@ -136,7 +72,7 @@ function update() {
 
 function initScene() {
   var ground,ledge;
-  
+
   // We're going to be using physics, so enable the Arcade Physics system
   game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -164,6 +100,83 @@ function initScene() {
 
   ledge = platforms.create(-150, 250, 'ground');
   ledge.body.immovable = true;
+}
+
+function drawPlayer() {
+  // The player and its settings
+  player = game.add.sprite(32, game.world.height - 150, 'dude');
+
+  // We need to enable physics on the player and baddie
+  game.physics.arcade.enable(player);
+
+  // Player physics properties. Give the little guy a slight bounce.
+  player.body.bounce.y = 0.2;
+  player.body.gravity.y = 300;
+  player.body.friction = 0.95;
+  player.body.collideWorldBounds = true;
+
+  // Two player animations, walking left and right.
+  player.animations.add('left', [0, 1, 2, 3], 10, true);
+  player.animations.add('right', [5, 6, 7, 8], 10, true);
+}
+
+function drawBaddies() {
+  // The baddie and its settings
+  baddies = game.add.group();
+
+  baddies.enableBody = true;
+
+  for (var i = 0; i < 3; i++) {
+    var baddie = baddies.create((i * 300) + 25, 0, 'baddie');
+
+    // Baddie physics properties.
+    baddie.body.bounce.y = 0.2;
+    baddie.body.gravity.y = 300;
+    baddie.body.collideWorldBounds = true;
+
+    // Two badie animations, walking left and right.
+    baddie.animations.add('left', [0, 1], 10, true);
+    baddie.animations.add('right', [2,3], 10, true);
+
+    game.physics.arcade.enable(baddie);
+  }
+}
+
+function drawStars() {
+  // Finally some stars to collect
+  stars = game.add.group();
+
+  // We will enable physics for any star that is created in this group
+  stars.enableBody = true;
+
+  // Here we'll create 12 of them evenly spaced apart
+  var numStars = 12;
+  for (var i = 0; i < numStars; i++) {
+    // Create a star inside of the 'stars' group
+    var star = stars.create(i * (game.width / numStars) + 10, 0, 'star');
+
+    // Let gravity do its thing
+    star.body.gravity.y = 300;
+
+    // This just gives each star a slightly random bounce value
+    star.body.bounce.y = 0.7 + Math.random() * 0.2;
+  }
+}
+
+function drawDiamonds() {
+  // Similar to stars, add diamonds as well
+  diamonds = game.add.group();
+
+  diamonds.enableBody = true;
+
+  var numDiamonds = 3;
+  for (var i = 0; i < numDiamonds; i++) {
+    var diamond = diamonds.create(i * (game.width / numDiamonds) + 20, 0, 'diamond');
+
+    diamond.body.gravity.y = 600;
+
+    diamond.body.bounce.y = 0.2 + Math.random() * 0.2;
+  }
 }
 
 function movePlayer() {
@@ -199,10 +212,6 @@ function movePlayer() {
     }
   }
 }
-
-var randomVelocity = function() {
-  return Math.floor((Math.random() * 51) + 50);
-};
 
 function initBaddies() {
   var directions = [{
@@ -245,19 +254,23 @@ function initBaddies() {
 function checkBaddieWallCollision() {
   baddies.forEach(function(baddie) {
     if( baddie.body.x <= 0 ) {
+
       baddie.animations.stop();
       baddie.body.velocity.x = randomVelocity();
       baddie.animations.play('right');
+
     } else if( baddie.body.x >= (game.width - baddie.width) ) {
+
       baddie.animations.stop();
       baddie.body.velocity.x = -randomVelocity();
       baddie.animations.play('left');
+
     }
   });
 }
 
 function collectPoints(player, object) {
-  var points = object.key === 'diamond' ? 10 : 1;
+  var points = (object.key === 'diamond' ? 10 : 1);
 
   // Remove the object from the screen
   object.kill();

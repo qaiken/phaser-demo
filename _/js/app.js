@@ -39,6 +39,8 @@ function create() {
 
   initScene();
 
+  drawPlatforms();
+
   drawPlayer();
 
   drawBaddies();
@@ -72,8 +74,6 @@ function update() {
 }
 
 function initScene() {
-  var ground,ledge;
-
   // We're going to be using physics, so enable the Arcade Physics system
   game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -85,9 +85,24 @@ function initScene() {
 
   // We will enable physics for any object that is created in this group
   platforms.enableBody = true;
+}
 
+function drawPlatforms() {
+  var ledge, xPos,yPos;
+  var drawnYPositions = [];
+  // Max: 3 Min: 1
+  var additionalLedges = Math.floor(Math.random()*(3)+1);
   // Here we create the ground.
-  ground = platforms.create(0, game.world.height - 64, 'ground');
+  var ground = platforms.create(0, game.world.height - 64, 'ground');
+
+  var dontOverLap = function(yPos) {
+    drawnYPositions.forEach(function(pos) {
+      while( Math.abs(pos - yPos) < 82 ) {
+        yPos -= 5;
+      }
+    });
+    return yPos;
+  }
 
   // Scale it to fit the width of the game (the original sprite is 400x32 in size)
   ground.scale.setTo(2, 2);
@@ -95,12 +110,42 @@ function initScene() {
   // This stops it from falling away when you jump on it
   ground.body.immovable = true;
 
-  // Now let's create two ledges
-  ledge = platforms.create(400, 400, 'ground');
+  // Make sure there is one low ledge on the left
+  // Max: 100 Min: -200
+  xPos = Math.floor(Math.random()*(-101)-200);
+  // Max: 400 Min: 350
+  yPos = Math.floor(Math.random()*(51)+350);
+  ledge = platforms.create(xPos, yPos, 'ground');
   ledge.body.immovable = true;
+  drawnYPositions.push(yPos);
 
-  ledge = platforms.create(-150, 250, 'ground');
+  // Make sure there is one medium ledge in the middle
+  // Max: 250 Min: 150
+  xPos = Math.floor(Math.random()*(101)+150);
+  // Max: 350 Min: 300
+  yPos = Math.floor(Math.random()*(51)+300);
+  yPos = dontOverLap(yPos);
+  ledge = platforms.create(xPos, yPos, 'ground');
   ledge.body.immovable = true;
+  drawnYPositions.push(yPos);
+
+  // Draw Additional Ledges
+  for(var i = 0; i < additionalLedges; ++i) {
+    // Max: 600 Min: -200
+    xPos = Math.floor(Math.random()*(801)-200);
+
+    // Max: 400 Min: 250
+    yPos = Math.floor(Math.random()*(151)+250);
+
+    yPos = dontOverLap(yPos);
+
+    drawnYPositions.push(yPos);
+
+    ledge = platforms.create(xPos, yPos, 'ground');
+    ledge.body.immovable = true;
+  }
+
+  console.log(drawnYPositions);
 }
 
 function drawPlayer() {
@@ -326,7 +371,9 @@ function reset() {
   killEm(stars);
   killEm(diamonds);
   killEm(baddies);
+  killEm(platforms);
 
+  drawPlatforms();
   drawStars();
   drawDiamonds();
   

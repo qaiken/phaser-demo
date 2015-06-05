@@ -13,10 +13,10 @@ var randomVelocity = function() {
 };
 
 var score = 0;
+var level = 0;
 
 var highScore = document.querySelector('.score-value');
-
-console.log(highScore);
+var currLevel = document.querySelector('.level-value');
 
 function preload() {
   game.load.image('sky', 'img/sky.png');
@@ -42,6 +42,7 @@ function create() {
   drawPlayer();
 
   drawBaddies();
+
   moveBaddies();
 
   drawStars();
@@ -126,7 +127,7 @@ function drawBaddies() {
 
   baddies.enableBody = true;
 
-  for (var i = 0; i < 3; i++) {
+  for (var i = 0; i < 3 + level; i++) {
     var baddie = baddies.create((i * 300) + 25, 0, 'baddie');
 
     // Baddie physics properties.
@@ -329,7 +330,7 @@ function reset() {
   drawStars();
   drawDiamonds();
   
-  drawBaddies();
+  drawBaddies(level);
   moveBaddies();
 
   drawPlayer();
@@ -345,6 +346,9 @@ function initAudio(sounds) {
 function checkIfWon() {
   if( stars.total === 0 && diamonds.total === 0) {
     game.win.play();
+    
+    currLevel.textContent = ++level + 1;
+
     reset();
   }
 }
@@ -354,6 +358,8 @@ function gameOver() {
   game.boom.play();
 
   score = 0;
+  level = 0;
+  currLevel.textContent = 1;
   scoreText.text = 'Score: ' + score;
 
   reset();

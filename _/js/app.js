@@ -167,13 +167,17 @@ function drawPlayer() {
 }
 
 function drawBaddies() {
+  var baddie, pos;
+
   // The baddie and its settings
   baddies = game.add.group();
 
   baddies.enableBody = true;
 
   for (var i = 0; i < 3 + level; i++) {
-    var baddie = baddies.create((i * 300) + 25, 0, 'baddie');
+    // Max: game.world.width-32 Min: 0
+    pos = Math.floor(Math.random()*(game.world.width-32+1));
+    baddie = baddies.create(pos, 0, 'baddie');
 
     // Baddie physics properties.
     baddie.body.bounce.y = 0.2;
@@ -189,6 +193,9 @@ function drawBaddies() {
 }
 
 function drawStars() {
+  var star;
+  var numStars = 12;
+  var spaces = game.width / numStars;
   // Finally some stars to collect
   stars = game.add.group();
 
@@ -196,10 +203,9 @@ function drawStars() {
   stars.enableBody = true;
 
   // Here we'll create 12 of them evenly spaced apart
-  var numStars = 12;
   for (var i = 0; i < numStars; i++) {
     // Create a star inside of the 'stars' group
-    var star = stars.create(i * (game.width / numStars) + 10, 0, 'star');
+    star = stars.create((i * spaces)+11, 0, 'star');
 
     // Let gravity do its thing
     star.body.gravity.y = 300;
@@ -210,6 +216,7 @@ function drawStars() {
 }
 
 function drawDiamonds() {
+  var diamond, pos;
   // Similar to stars, add diamonds as well
   diamonds = game.add.group();
 
@@ -217,7 +224,8 @@ function drawDiamonds() {
 
   var numDiamonds = 3;
   for (var i = 0; i < numDiamonds; i++) {
-    var diamond = diamonds.create(i * (game.width / numDiamonds) + 20, 0, 'diamond');
+    pos = Math.floor(Math.random()*(game.world.width-32+1));
+    diamond = diamonds.create(pos, 0, 'diamond');
 
     diamond.body.gravity.y = 600;
 

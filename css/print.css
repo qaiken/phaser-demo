@@ -614,12 +614,19 @@ textarea {
   color: rgba(89, 182, 253, 0.8);
 }
 
+.game-title,
 .high-score {
   text-align: center;
+  font-family: sans-serif;
+}
+
+.game-title {
+  margin: 2rem 0 0 0;
+  font-size: 5rem;
 }
 
 canvas {
-  margin: 20px auto;
+  margin: 2rem auto;
 }
 
 /*# sourceMappingURL=print.css.map */

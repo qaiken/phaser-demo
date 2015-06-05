@@ -1,7 +1,14 @@
+.game-title,
 .high-score {
   text-align: center;
+  font-family: sans-serif;
+}
+
+.game-title {
+  margin: rem(20px) 0 0 0;
+  font-size: rem(50px);
 }
 
 canvas {
-  margin: 20px auto;
+  margin: rem(20px) auto;
 }

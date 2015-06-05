@@ -1,6 +1,6 @@
 var Phaser = require('Phaser');
 
-var player, baddies, platforms, cursors, stars, diamonds, scoreText, highScore;
+var player, baddies, platforms, cursors, stars, diamonds, scoreText;
 
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
   preload: preload,
@@ -13,6 +13,10 @@ var randomVelocity = function() {
 };
 
 var score = 0;
+
+var highScore = document.querySelector('.score-value');
+
+console.log(highScore);
 
 function preload() {
   game.load.image('sky', 'img/sky.png');
@@ -306,6 +310,11 @@ function collectPoints(player, object) {
 
   // Add and update the score
   score += points;
+
+
+  if( score > +highScore.textContent ) {
+    highScore.textContent = score;
+  }
 
   scoreText.text = 'Score: ' + score;
 }

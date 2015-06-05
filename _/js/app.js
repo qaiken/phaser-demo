@@ -7,7 +7,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
 });
 
 var player;
-var baddie;
+var baddies;
 var platforms;
 var cursors;
 
@@ -29,42 +29,33 @@ function preload() {
 
 function create() {
 
-  // We're going to be using physics, so enable the Arcade Physics system
-  game.physics.startSystem(Phaser.Physics.ARCADE);
-
-  // A simple background for our game
-  game.add.sprite(0, 0, 'sky');
-
-  // The platforms group contains the ground and the 2 ledges we can jump on
-  platforms = game.add.group();
-
-  // We will enable physics for any object that is created in this group
-  platforms.enableBody = true;
-
-  // Here we create the ground.
-  var ground = platforms.create(0, game.world.height - 64, 'ground');
-
-  // Scale it to fit the width of the game (the original sprite is 400x32 in size)
-  ground.scale.setTo(2, 2);
-
-  // This stops it from falling away when you jump on it
-  ground.body.immovable = true;
-
-  // Now let's create two ledges
-  var ledge = platforms.create(400, 400, 'ground');
-  ledge.body.immovable = true;
-
-  ledge = platforms.create(-150, 250, 'ground');
-  ledge.body.immovable = true;
+  initScene();
 
   // The player and its settings
   player = game.add.sprite(32, game.world.height - 150, 'dude');
 
   // The baddie and its settings
-  baddie = game.add.sprite(300, game.world.height - 150, 'baddie');
+  baddies = game.add.group();
+
+  baddies.enableBody = true;
+
+  for (var i = 0; i < 3; i++) {
+    var baddie = baddies.create((i * 300) + 25, 0, 'baddie');
+
+    // Baddie physics properties.
+    baddie.body.bounce.y = 0.2;
+    baddie.body.gravity.y = 300;
+    baddie.body.collideWorldBounds = true;
+
+    // Two badie animations, walking left and right.
+    baddie.animations.add('left', [0, 1], 10, true);
+    baddie.animations.add('right', [2,3], 10, true);
+
+    game.physics.arcade.enable(baddie);
+  }
 
   // We need to enable physics on the player and baddie
-  game.physics.arcade.enable([player,baddie]);
+  game.physics.arcade.enable(player);
 
   // Player physics properties. Give the little guy a slight bounce.
   player.body.bounce.y = 0.2;
@@ -72,18 +63,9 @@ function create() {
   player.body.friction = 0.95;
   player.body.collideWorldBounds = true;
 
-  // Player physics properties. Give the little guy a slight bounce.
-  baddie.body.bounce.y = 0.2;
-  baddie.body.gravity.y = 300;
-  baddie.body.collideWorldBounds = true;
-
   // Two player animations, walking left and right.
   player.animations.add('left', [0, 1, 2, 3], 10, true);
   player.animations.add('right', [5, 6, 7, 8], 10, true);
-
-  // // Two badie animations, walking left and right.
-  baddie.animations.add('left', [0, 1], 10, true);
-  baddie.animations.add('right', [2,3], 10, true);
 
   // Finally some stars to collect
   stars = game.add.group();
@@ -127,14 +109,14 @@ function create() {
   // Our controls.
   cursors = game.input.keyboard.createCursorKeys();
 
-  initBaddie();
+  initBaddies();
 }
 
 function update() {
 
   // Collide the entities with the platforms
   game.physics.arcade.collide(player, platforms);
-  game.physics.arcade.collide(baddie, platforms);
+  game.physics.arcade.collide(baddies, platforms);
 
   game.physics.arcade.collide(stars, platforms);
   game.physics.arcade.collide(diamonds, platforms);
@@ -144,7 +126,43 @@ function update() {
   game.physics.arcade.overlap(player, stars, collectPoints, null, this);
   game.physics.arcade.overlap(player, diamonds, collectPoints, null, this);
 
+  game.physics.arcade.overlap(player, baddies, gameOver, null, this);
+
   movePlayer();
+
+  checkBaddieWallCollision();
+}
+
+function initScene() {
+  var ground,ledge;
+  
+  // We're going to be using physics, so enable the Arcade Physics system
+  game.physics.startSystem(Phaser.Physics.ARCADE);
+
+  // A simple background for our game
+  game.add.sprite(0, 0, 'sky');
+
+  // The platforms group contains the ground and the 2 ledges we can jump on
+  platforms = game.add.group();
+
+  // We will enable physics for any object that is created in this group
+  platforms.enableBody = true;
+
+  // Here we create the ground.
+  ground = platforms.create(0, game.world.height - 64, 'ground');
+
+  // Scale it to fit the width of the game (the original sprite is 400x32 in size)
+  ground.scale.setTo(2, 2);
+
+  // This stops it from falling away when you jump on it
+  ground.body.immovable = true;
+
+  // Now let's create two ledges
+  ledge = platforms.create(400, 400, 'ground');
+  ledge.body.immovable = true;
+
+  ledge = platforms.create(-150, 250, 'ground');
+  ledge.body.immovable = true;
 }
 
 function movePlayer() {
@@ -181,8 +199,11 @@ function movePlayer() {
   }
 }
 
-function initBaddie() {
+var randomVelocity = function() {
+  return Math.floor((Math.random() * 51) + 50);
+};
 
+function initBaddies() {
   var directions = [{
     animation: 'left',
     frame: 1
@@ -192,11 +213,11 @@ function initBaddie() {
     frame: 2
   }];
 
-  var moveBaddie = function() {
-
+  var moveBaddie = function(baddie) {
     var i = Math.floor(Math.random() * 2);
     var dir_obj = directions[i];
-    var velocity = Math.floor((Math.random() * 51) + 50);
+    var velocity = randomVelocity();
+    var delay = Math.floor((Math.random() * 5001) + 1000);
 
     if(dir_obj.animation === 'left') {
       baddie.body.velocity.x = -velocity;
@@ -209,25 +230,43 @@ function initBaddie() {
     setTimeout(function() {
       baddie.body.velocity.x = 0
       baddie.animations.stop();
-      baddie.frame = Math.floor((Math.random() * 2) + 1);;
-      setTimeout(moveBaddie,1000);
-    },5000);
+      baddie.frame = Math.floor((Math.random() * 2) + 1);
 
+      setTimeout(function() {
+        moveBaddie(baddie);
+      },delay);
+    },delay);
   };
 
-  moveBaddie();
+  baddies.forEach(moveBaddie);
 }
 
-
+function checkBaddieWallCollision() {
+  baddies.forEach(function(baddie) {
+    if( baddie.body.x <= 0 ) {
+      baddie.animations.stop();
+      baddie.body.velocity.x = randomVelocity();
+      baddie.animations.play('right');
+    } else if( baddie.body.x >= (game.width - baddie.width) ) {
+      baddie.animations.stop();
+      baddie.body.velocity.x = -randomVelocity();
+      baddie.animations.play('left');
+    }
+  });
+}
 
 function collectPoints(player, object) {
+  var points = object.key === 'diamond' ? 10 : 1;
+
   // Remove the object from the screen
   object.kill();
-
-  var points = object.key === 'diamond' ? 10 : 1;
 
   // Add and update the score
   score += points;
 
   scoreText.text = 'Score: ' + score;
+}
+
+function gameOver(player, baddie) {
+  player.kill();
 }

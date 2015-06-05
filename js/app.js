@@ -127,6 +127,8 @@ function create() {
 
   // Our controls.
   cursors = game.input.keyboard.createCursorKeys();
+
+  initBaddie();
 }
 
 function update() {
@@ -178,6 +180,43 @@ function movePlayer() {
       }
     }
   }
+}
+
+function initBaddie() {
+
+  var directions = [{
+    animation: 'left',
+    frame: 1
+  },
+  {
+    animation: 'right',
+    frame: 2
+  }];
+
+  var moveBaddie = function() {
+
+    var i = Math.floor(Math.random() * 2);
+    var dir_obj = directions[i];
+    var velocity = Math.floor((Math.random() * 51) + 50);
+
+    if(dir_obj.animation === 'left') {
+      baddie.body.velocity.x = -velocity;
+      baddie.animations.play('left');
+    } else {
+      baddie.body.velocity.x = velocity;
+      baddie.animations.play('right');
+    }
+
+    setTimeout(function() {
+      baddie.body.velocity.x = 0
+      baddie.animations.stop();
+      baddie.frame = Math.floor((Math.random() * 2) + 1);;
+      setTimeout(moveBaddie,1000);
+    },5000);
+
+  };
+
+  moveBaddie();
 }
 
 

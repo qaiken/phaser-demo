@@ -32,12 +32,11 @@ function create() {
   drawPlayer();
 
   drawBaddies();
+  moveBaddies();
 
   drawStars();
 
   drawDiamonds();
-
-  initBaddies();
 
   // The score
   scoreText = game.add.text(16, 16, 'score: 0', {
@@ -202,7 +201,7 @@ function movePlayer() {
   }
 }
 
-function initBaddies() {
+function moveBaddies() {
   var directions = [{
     animation: 'left',
     frame: 1
@@ -301,7 +300,10 @@ function reset() {
 
   drawStars();
   drawDiamonds();
+  
   drawBaddies();
+  moveBaddies();
+
   drawPlayer();
 }
 

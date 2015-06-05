@@ -614,4 +614,8 @@ textarea {
   color: rgba(89, 182, 253, 0.8);
 }
 
+canvas {
+  margin: 20px auto;
+}
+
 /*# sourceMappingURL=print.css.map */

@@ -629,3 +629,7 @@ textarea {
 .browse-happy p a:hover {
   color: rgba(89, 182, 253, 0.8);
 }
+
+canvas {
+  margin: 20px auto;
+}

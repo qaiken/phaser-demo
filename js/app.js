@@ -50,24 +50,13 @@ function create() {
 }
 
 function update() {
-
-  // Collide the entities with the platforms
-  game.physics.arcade.collide(player, platforms);
-  game.physics.arcade.collide(baddies, platforms);
-
-  game.physics.arcade.collide(stars, platforms);
-  game.physics.arcade.collide(diamonds, platforms);
-
-  // Checks to see if the player overlaps with any of the stars or diamonds
-  // Call collectPoints function if so
-  game.physics.arcade.overlap(player, stars, collectPoints, null, this);
-  game.physics.arcade.overlap(player, diamonds, collectPoints, null, this);
-
-  game.physics.arcade.overlap(player, baddies, gameOver, null, this);
+  checkObjectCollisions();
 
   movePlayer();
 
   checkBaddieWallCollision();
+
+  checkIfWon();
 }
 
 function initScene() {
@@ -269,6 +258,28 @@ function checkBaddieWallCollision() {
   });
 }
 
+function checkObjectCollisions() {
+  // Collide the entities with the platforms
+  game.physics.arcade.collide(player, platforms);
+  game.physics.arcade.collide(baddies, platforms);
+
+  game.physics.arcade.collide(stars, platforms);
+  game.physics.arcade.collide(diamonds, platforms);
+
+  // Checks to see if the player overlaps with any of the stars or diamonds
+  // Call collectPoints function if so
+  game.physics.arcade.overlap(player, stars, collectPoints, null, this);
+  game.physics.arcade.overlap(player, diamonds, collectPoints, null, this);
+
+  game.physics.arcade.overlap(player, baddies, gameOver, null, this);
+}
+
+function killEm(group) {
+  group.children.forEach(function(item) {
+    item.kill();
+  });
+}
+
 function collectPoints(player, object) {
   var points = (object.key === 'diamond' ? 10 : 1);
 
@@ -281,7 +292,29 @@ function collectPoints(player, object) {
   scoreText.text = 'Score: ' + score;
 }
 
-function gameOver(player, baddie) {
+function reset() {
   player.kill();
+
+  killEm(stars);
+  killEm(diamonds);
+  killEm(baddies);
+
+  drawStars();
+  drawDiamonds();
+  drawBaddies();
+  drawPlayer();
+}
+
+function checkIfWon() {
+  if( stars.total === 0 && diamonds.total === 0) {
+    reset();
+  }
+}
+
+function gameOver() {
+  score = 0;
+  scoreText.text = 'Score: ' + score;
+
+  reset();
 }
 },{}]},{},[1]);

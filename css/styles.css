@@ -434,7 +434,7 @@ html {
 }
 
 body {
-  background: #fff;
+  background: #C9ADD7;
   color: #000;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
@@ -628,6 +628,10 @@ textarea {
 }
 .browse-happy p a:hover {
   color: rgba(89, 182, 253, 0.8);
+}
+
+.high-score {
+  text-align: center;
 }
 
 canvas {

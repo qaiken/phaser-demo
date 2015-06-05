@@ -1,6 +1,6 @@
 var Phaser = require('Phaser');
 
-var player, baddies, platforms, cursors, stars, diamonds, scoreText;
+var player, baddies, platforms, cursors, stars, diamonds, scoreText, highScore;
 
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {
   preload: preload,
@@ -20,8 +20,15 @@ function preload() {
   game.load.image('ground', 'img/platform.png');
   game.load.image('star', 'img/star.png');
   game.load.image('sky', 'img/sky.png');
+
   game.load.spritesheet('baddie', 'img/baddie.png', 32, 32);
   game.load.spritesheet('dude', 'img/dude.png', 32, 48);
+
+  game.load.audio('pickup_1', 'audio/pickup-1.wav');
+  game.load.audio('pickup_2', 'audio/pickup-2.wav');
+  game.load.audio('boom', 'audio/boom.wav');
+  game.load.audio('win', 'audio/win.wav');
+  game.load.audio('jump', 'audio/jump.wav');
 }
 
 function create() {
@@ -36,6 +43,8 @@ function create() {
   drawStars();
 
   drawDiamonds();
+
+  initAudio(['pickup_1','pickup_2','jump','boom','win']);
 
   // The score
   scoreText = game.add.text(16, 16, 'score: 0', {
@@ -186,8 +195,10 @@ function movePlayer() {
 
   if (player.body.touching.down) {
     // Allow the player to jump if they are touching the ground.
-    if (cursors.up.isDown)
+    if (cursors.up.isDown) {
+      game.jump.play();
       player.body.velocity.y = -350;
+    }
 
     // Apply friction when player is sliding
     if (!cursors.left.isDown && !cursors.right.isDown && Math.abs(player.body.velocity.x) > 0) {
@@ -225,7 +236,7 @@ function moveBaddies() {
     }
 
     setTimeout(function() {
-      baddie.body.velocity.x = 0
+      baddie.body.velocity.x = 0;
       baddie.animations.stop();
       baddie.frame = Math.floor((Math.random() * 2) + 1);
 
@@ -279,7 +290,16 @@ function killEm(group) {
 }
 
 function collectPoints(player, object) {
-  var points = (object.key === 'diamond' ? 10 : 1);
+  var points;
+  var type = object.key;
+
+  if ( type === 'diamond' ) {
+    points = 10;
+    game.pickup_2.play();
+  } else {
+    points = 1;
+    game.pickup_1.play();
+  }
 
   // Remove the object from the screen
   object.kill();
@@ -306,13 +326,24 @@ function reset() {
   drawPlayer();
 }
 
+function initAudio(sounds) {
+  sounds.forEach(function(sound) {
+    game[sound] = game.add.audio(sound);
+    game[sound].volume = 0.2;
+  });
+}
+
 function checkIfWon() {
   if( stars.total === 0 && diamonds.total === 0) {
+    game.win.play();
     reset();
   }
 }
 
 function gameOver() {
+
+  game.boom.play();
+
   score = 0;
   scoreText.text = 'Score: ' + score;
 

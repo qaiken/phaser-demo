@@ -40,8 +40,7 @@ PhaserDemo.Game.prototype = {
   drawPlatforms: function() {
     var ledge, xPos, yPos;
     var drawnYPositions = [];
-    // Max: 3 Min: 1
-    var additionalLedges = Math.floor(Math.random()*(3)+1);
+    var additionalLedges = utils.randomNumber(1,3);
     // Here we create the ground.
     var ground = this.platforms.create(0, this.world.height - 64, 'ground');
 
@@ -61,19 +60,17 @@ PhaserDemo.Game.prototype = {
     ground.body.immovable = true;
 
     // Make sure there is one low ledge on the left
-    // Max: 100 Min: -200
-    xPos = Math.floor(Math.random()*(-101)-200);
-    // Max: 400 Min: 350
-    yPos = Math.floor(Math.random()*(51)+350);
+    xPos = utils.randomNumber(-200,100);
+    yPos = utils.randomNumber(350,400);
     ledge = this.platforms.create(xPos, yPos, 'ground');
     ledge.body.immovable = true;
     drawnYPositions.push(yPos);
 
     // Make sure there is one medium ledge in the middle
     // Max: 250 Min: 150
-    xPos = Math.floor(Math.random()*(101)+150);
+    xPos = utils.randomNumber(150,250);
     // Max: 350 Min: 300
-    yPos = Math.floor(Math.random()*(51)+300);
+    yPos = utils.randomNumber(300,350);
     yPos = dontOverLap(yPos);
     drawnYPositions.push(yPos);
     ledge = this.platforms.create(xPos, yPos, 'ground');
@@ -82,10 +79,10 @@ PhaserDemo.Game.prototype = {
     // Draw Additional Ledges
     for(var i = 0; i < additionalLedges; ++i) {
       // Max: 600 Min: -200
-      xPos = Math.floor(Math.random()*(801)-200);
+      xPos = utils.randomNumber(-200,600);
 
       // Max: 400 Min: 250
-      yPos = Math.floor(Math.random()*(151)+250);
+      yPos = utils.randomNumber(250,400);
 
       yPos = dontOverLap(yPos);
       if( yPos < 82 ) {
@@ -123,8 +120,7 @@ PhaserDemo.Game.prototype = {
     this.baddies.enableBody = true;
 
     for (var i = 0; i < 3 + this.level; i++) {
-      // Max: game.world.width-32 Min: 0
-      pos = Math.floor(Math.random()*(this.world.width-32+1));
+      pos = utils.randomNumber(0,this.world.width-32);
       baddie = this.baddies.create(pos, 0, 'baddie');
 
       // Baddie physics properties.
@@ -160,9 +156,8 @@ PhaserDemo.Game.prototype = {
       star.body.bounce.y = 0.7 + Math.random() * 0.2;
     }
   },
-  drawDiamonds: function() {
+  drawDiamonds: function(numDiamonds) {
     var diamond, pos;
-    var numDiamonds = 3;
 
     // Similar to stars, add diamonds as well
     this.diamonds = this.add.group();
@@ -170,7 +165,7 @@ PhaserDemo.Game.prototype = {
     this.diamonds.enableBody = true;
 
     for (var i = 0; i < numDiamonds; i++) {
-      pos = Math.floor(Math.random()*(this.world.width-32+1));
+      pos = utils.randomNumber(0,this.world.width-32);
       diamond = this.diamonds.create(pos, 0, 'diamond');
 
       diamond.body.gravity.y = 600;
@@ -224,10 +219,10 @@ PhaserDemo.Game.prototype = {
     }];
 
     var moveBaddie = function(baddie) {
-      var i = Math.floor(Math.random() * 2);
+      var i = utils.randomNumber(0,1);
       var dir_obj = directions[i];
       var velocity = utils.randomNumber(50,100);
-      var delay = Math.floor((Math.random() * 5001) + 1000);
+      var delay = utils.randomNumber(1000,5000);
 
       if(dir_obj.animation === 'left') {
         baddie.body.velocity.x = -velocity;
@@ -241,7 +236,7 @@ PhaserDemo.Game.prototype = {
         baddie.body.velocity.x = 0;
         baddie.animations.stop();
         // look left or right
-        baddie.frame = Math.floor((Math.random() * 2) + 1);
+        baddie.frame = utils.randomNumber(1,2);
 
         setTimeout(function() {
           moveBaddie(baddie);
@@ -286,8 +281,8 @@ PhaserDemo.Game.prototype = {
     this.drawBaddies();
     this.moveBaddies();
 
-    this.drawStars(48);
-    this.drawDiamonds();
+    this.drawStars(utils.randomNumber(6,12));
+    this.drawDiamonds(utils.randomNumber(1,3));
 
     this.drawPlayer();
   },

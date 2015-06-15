@@ -13,7 +13,7 @@ module.exports = {
   },
   scripts: {
     files: [srcs.js.all],
-    tasks: ['browserify', 'uglify']
+    tasks: ['browserify']
   },
   sass: {
     files: [srcs.sass.all],

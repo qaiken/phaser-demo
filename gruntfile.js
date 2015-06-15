@@ -32,7 +32,13 @@ module.exports = function (grunt) {
   //
   //---------------------------------
 
-  grunt.registerTask('default', ['browserify', 'uglify', 'sass', 'autoprefixer', 'imagemin', 'watch']);
+  grunt.registerTask('default', [
+    'browserify',
+    'sass',
+    'autoprefixer',
+    'imagemin',
+    'watch'
+  ]);
 
   grunt.registerTask('clean', [
     'jsbeautifier:modify',
@@ -41,6 +47,16 @@ module.exports = function (grunt) {
   grunt.registerTask('verify', [
     'jsbeautifier:verify',
     'jshint'
+  ]);
+
+  grunt.registerTask('production', [
+    'browserify',
+    'uglify',
+    'sass',
+    'autoprefixer',
+    'combine_mq',
+    'cssmin',
+    'imagemin'
   ]);
 
 };

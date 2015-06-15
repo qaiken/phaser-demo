@@ -9,6 +9,11 @@
 var srcs = require('../srcs.js');
 
 module.exports = {
+  options: {
+    browserifyOptions: {
+      debug: true
+    }
+  },
   dist: {
     files: {
       'js/app.js': [srcs.js.main],

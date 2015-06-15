@@ -54,6 +54,7 @@ module.exports = function (grunt) {
     'uglify',
     'sass',
     'autoprefixer',
+    'combine_mq',
     'cssmin',
     'imagemin'
   ]);

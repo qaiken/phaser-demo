@@ -6,7 +6,8 @@ module.exports = {
   },
   sass: {
     all: '_/scss/**/*.scss',
-    main: '_/scss'
+    main: '_/scss',
+    css: 'css/*.css'
   },
   img: {
     all: '_/img/**/*.*'

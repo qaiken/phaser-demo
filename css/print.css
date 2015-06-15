@@ -274,7 +274,9 @@ title {
   display: block;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
 }
 
 .visually-hidden {
@@ -331,7 +333,7 @@ input[type="submit"] {
   background-image: url("assets/images/sprites/sprite.png");
 }
 
-@media (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3 / 2), (-webkit-min-device-pixel-ratio: 1.5), (min-device-pixel-ratio: 1.5), (min-resolution: 1.5dppx) {
+@media (min--moz-device-pixel-ratio: 1.5), (-webkit-min-device-pixel-ratio: 1.5), (min-device-pixel-ratio: 1.5), (min-resolution: 1.5dppx) {
   .sprite {
     background-image: url("assets/images/sprites/sprite@2x.png");
     background-size: 198px 104px;
@@ -351,7 +353,8 @@ input[type="submit"] {
     background: transparent !important;
     color: #000 !important;
     text-shadow: none !important;
-    filter: none !important;
+    -webkit-filter: none !important;
+            filter: none !important;
     -ms-filter: none !important;
   }
 
@@ -406,6 +409,11 @@ input[type="submit"] {
   h3 {
     page-break-after: avoid;
   }
+}
+::-moz-selection {
+  background: #777;
+  color: #fff;
+  text-shadow: none;
 }
 ::selection {
   background: #777;
@@ -613,5 +621,3 @@ textarea {
 .browse-happy p a:hover {
   color: rgba(89, 182, 253, 0.8);
 }
-
-/*# sourceMappingURL=print.css.map */

@@ -7,7 +7,7 @@ module.exports = {
       cwd: srcs.sass.cssDir,
       src: ['*.css', '!*.min.css'],
       dest: srcs.sass.cssDir,
-      ext: '.min.css'
+      ext: '.css'
     }]
   }
 };
